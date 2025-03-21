@@ -163,16 +163,21 @@ async def extract_questions_from_text(file_path, text):
     """Extract questions from text using the AI model."""
     # Improved prompt for question extraction
     extraction_prompt = f"""
-    Read the following text carefully and extract 5-10 important questions that can be completely answered using only this content.
+    Read the following text carefully and extract THE MAXIMUM NUMBER OF QUESTIONS possible that can be answered using only this content.
     
     IMPORTANT GUIDELINES:
-    1. Only create questions that have clear, complete answers in the text
-    2. Ensure questions cover key concepts, facts, and details from the text
-    3. Avoid questions that would require information beyond what's provided
-    4. Create specific questions rather than overly general ones
-    5. Format your response as a numbered list like this:
+    1. Be COMPREHENSIVE - create questions that cover EVERY piece of information in the text, no matter how small
+    2. Include questions about all facts, concepts, definitions, examples, steps, and details
+    3. Break down complex information into multiple specific questions
+    4. Ensure all sections, paragraphs, and sentences of the text are represented in your questions
+    5. Only create questions that have clear, complete answers in the text
+    6. Format your response as a numbered list like this:
        1. Question one?
        2. Question two?
+    
+    Your goal is to create so many questions that if someone only read the questions and answers,
+    they would have complete knowledge of all information contained in the original text.
+    DO NOT OMIT ANY INFORMATION - be exhaustive in your coverage.
     
     Here's the text:
     
@@ -192,10 +197,12 @@ async def generate_answer(question, source):
     
     IMPORTANT GUIDELINES:
     1. Answer directly and efficiently without unnecessary phrases like "The source text states that" or "According to the text"
-    2. Provide complete, accurate answers with relevant details from the text
-    3. Use a natural, conversational tone
-    4. If the exact answer isn't explicitly in the text, say "The information is not provided in the text" - don't guess
-    5. Format your answer clearly using plain language
+    2. Provide COMPLETE, DETAILED answers with ALL relevant information from the text
+    3. Include all facts, figures, examples, and context that relate to the question
+    4. Use a natural, conversational tone
+    5. If the exact answer isn't explicitly in the text, say "The information is not provided in the text" - don't guess
+    6. Format your answer clearly using plain language
+    7. Ensure your answer is comprehensive - if multiple parts of the text address the question, include all relevant information
     
     Question: {question}
     
@@ -244,7 +251,6 @@ async def process_file(file_path, text, progress_counter, verbose=True, no_cache
         # Combine questions and answers
         for (sub_file_path, sub_text, question), answer in zip(questions, answers):
             result.append({
-                'source': sub_file_path,
                 'question': question,
                 'answer': answer
             })
